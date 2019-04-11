@@ -65,35 +65,58 @@ ll /data/influxdb/
 
 
 
+cd /data/
+cd /data/TAQ
+nohup node test_script_big_1.js 2>&1 > 1.log &
+nohup node test_script_big_2.js 2>&1 > 2.log &
+nohup node test_script_big_3.js 2>&1 > 3.log &
+nohup node test_script_big_6.js 2>&1 > 6.log &
+nohup node test_script_big_7.js 2>&1 > 7.log &
+ll -h /data/TAQ/TAQ20070801.txt
+ll -h /data/TAQ/TAQ20070802.txt
+ll -h /data/TAQ/
+
+ps -elf | grep node
+kill 14981
+
+tail /data/TAQ/TAQ20070801.txt
+tail /data/TAQ/csv/TAQ20070801.csv
+
+tail /data/TAQ/TAQ20070802.txt
+tail /data/TAQ/csv/TAQ20070801.csv
+
+tail -f /data/1.log
+
+tail /data/TAQ/csv/TAQ20070801.csv
+
+tail -f nohup.out
+
+head /data/TAQ/TAQ20070801.txt
+
+cd /data/TAQ
 
 
+tail /data/TAQ/TAQ20070801.txt
 
 
+dstat -cmdnlgpy --socket
+
+nohup influx -import -path=/data/TAQ/TAQ20070801.txt -precision=ms -database=test2 2>&1 > import1.log &
+nohup influx -import -path=/data/TAQ/TAQ20070802.txt -precision=ms -database=test2 2>&1 > import2.log &
+nohup influx -import -path=/data/TAQ/TAQ20070803.txt -precision=ms -database=test2 2>&1 > import3.log &
+nohup influx -import -path=/data/TAQ/TAQ20070806.txt -precision=ms -database=test2 2>&1 > import6.log &
+nohup influx -import -path=/data/TAQ/TAQ20070807.txt -precision=ms -database=test2 2>&1 > import7.log &
 
 
+tail -f import1.log
+
+grep -C 20 'VNQ,' /data/TAQ/csv/TAQ20070801.csv
 
 
+kill 15559
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ps -elf | grep influx
 
 
 

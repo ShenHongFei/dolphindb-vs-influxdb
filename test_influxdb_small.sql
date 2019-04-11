@@ -61,7 +61,7 @@ use test
 
 
 --------------------- 1. 查询总记录数
-explain analyze select count(*) from readings;
+explain analyze select count(*) from readings
 ---------------
 .
 └── select
@@ -72,7 +72,7 @@ explain analyze select count(*) from readings;
 
 
 --------------------- 2. 点查询：按设备 ID 查询记录数
-explain analyze select count(*) from readings where device_id = 'demo000101';
+explain analyze select count(*) from readings where device_id = 'demo000101'
 ---------------
 .
 └── select
@@ -83,7 +83,7 @@ explain analyze select count(*) from readings where device_id = 'demo000101';
 
 
 --------------------- 3. 范围查询：查询某时间段内的所有记录
-explain analyze select * from readings where '2016-11-17 21:00:00' <= time and time < '2016-11-17 21:30:00';
+explain analyze select * from readings where '2016-11-17 21:00:00' <= time and time < '2016-11-17 21:30:00'
 ---------------
 .
 └── select
@@ -94,7 +94,7 @@ explain analyze select * from readings where '2016-11-17 21:00:00' <= time and t
 
 
 --------------------- 4. 范围查询.多维度: 查询某时间段内某些设备的所有记录
-explain analyze select * from readings where '2016-11-17 20:00:00' <= time and time < '2016-11-17 20:30:00' and (device_id = 'demo000000' or device_id = 'demo000010' or device_id = 'demo000100' or device_id = 'demo001000' );
+explain analyze select * from readings where '2016-11-17 20:00:00' <= time and time < '2016-11-17 20:30:00' and (device_id = 'demo000000' or device_id = 'demo000010' or device_id = 'demo000100' or device_id = 'demo001000' )
 ---------------
 .
 └── select
@@ -106,7 +106,7 @@ explain analyze select * from readings where '2016-11-17 20:00:00' <= time and t
 
 
 --------------------- 5. 范围查询.分区及非分区维度：查询某时间段内某些设备的特定记录
-explain analyze select * from readings where '2016-11-15 08:00:00' <= time and time < '2016-11-17 08:30:00' and (device_id = 'demo000000' or device_id = 'demo000010' or device_id = 'demo000100' or device_id = 'demo001000') and battery_level <= 10 and battery_status = 'discharging';
+explain analyze select * from readings where '2016-11-15 08:00:00' <= time and time < '2016-11-17 08:30:00' and (device_id = 'demo000000' or device_id = 'demo000010' or device_id = 'demo000100' or device_id = 'demo001000') and battery_level <= 10 and battery_status = 'discharging'
 ---------------
 .
 └── select
@@ -117,7 +117,7 @@ explain analyze select * from readings where '2016-11-15 08:00:00' <= time and t
 
 
 --------------------- 6. 精度查询：查询各设备在每 5 min 内的内存使用量最大、最小值之差
-explain analyze select max(mem_used) - min(mem_used) from readings group by time(5m);
+explain analyze select max(mem_used) - min(mem_used) from readings group by time(5m) where '2016-11-15' <= time and time < '2016-11-19'
 ---------------
 .
 └── select
@@ -127,7 +127,7 @@ explain analyze select max(mem_used) - min(mem_used) from readings group by time
 
 
 --------------------- 7. 聚合查询.单分区维度.max：设备电池最高温度
-explain analyze select device_id, max(battery_temperature) from readings group by device_id;
+explain analyze select device_id, max(battery_temperature) from readings group by device_id where '2016-11-15' <= time and time < '2016-11-19'
 .
 └── select
     ├── execution_time: 195.71771ms
@@ -137,7 +137,7 @@ explain analyze select device_id, max(battery_temperature) from readings group b
 
 
 --------------------- 8. 聚合查询.多分区维度.avg：计算各时间段内设备电池平均温度
-explain analyze select mean(battery_temperature) from readings group by device_id, time(1h);
+explain analyze select mean(battery_temperature) from readings group by device_id, time(1h) where '2016-11-15' <= time and time < '2016-11-19'
 ---------------
 .
 └── select
@@ -148,7 +148,7 @@ explain analyze select mean(battery_temperature) from readings group by device_i
 
 
 --------------------- 14. 经典查询：计算某时间段内高负载高电量设备的内存大小
-explain analyze select max(mem_total) from (select mem_free + mem_used as mem_total from readings where time <= '2016-11-18 21:00:00' and battery_level >= 90 and cpu_avg_1min > 90) group by time(1h), device_id;
+explain analyze select max(mem_total) from (select mem_free + mem_used as mem_total from readings where time <= '2016-11-18 21:00:00' and battery_level >= 90 and cpu_avg_1min > 90) where time <= '2016-11-18 21:00:00' group by time(1h), device_id;
 在 InfluxDB 中函数的参数只能是某一个 field ，而不能是 field 的表达式，因此只能使用 subquery，非常繁琐
 ---------------
 .
