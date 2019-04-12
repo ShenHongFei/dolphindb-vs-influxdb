@@ -120,6 +120,7 @@ ps -elf | grep influx
 
 
 
+nohup time influx -database 'test2' -execute "explain analyze select first(symbol), mean(tmp_spread) * 2 as spread from (select symbol, (ofr - bid) / (ofr + bid) as tmp_spread from taq where '2007-07-31 09:30:00' <= time and time < '2007-08-01 16:00:00' and bid > 0 and ofr > bid) where '2007-07-31 09:30:00' <= time and time < '2007-08-01 16:00:00' group by symbol, time(1m)" > query.log 2>&1 &
 
 
 
